@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/AndrewLopezHerrera/Laboratorio8DesarrolloAPI/issues"
   },
-  "homepage": "https://github.com/AndrewLopezHerrera/Laboratorio8DesarrolloAPI#readme"
+  "homepage": "https://github.com/AndrewLopezHerrera/Laboratorio8DesarrolloAPI#readme",
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2"
+  }
 }
