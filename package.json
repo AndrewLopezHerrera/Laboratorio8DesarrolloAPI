@@ -1,0 +1,24 @@
+{
+  "name": "laboratorio8desarrolloapi",
+  "version": "1.0.0",
+  "description": "Este es el laboratorio 8 del curso de Diseño de Páginas Web",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndrewLopezHerrera/Laboratorio8DesarrolloAPI.git"
+  },
+  "keywords": [
+    "API",
+    "web",
+    "json"
+  ],
+  "author": "Hillary Malespin Ulloa y Andrew López Herrera",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AndrewLopezHerrera/Laboratorio8DesarrolloAPI/issues"
+  },
+  "homepage": "https://github.com/AndrewLopezHerrera/Laboratorio8DesarrolloAPI#readme"
+}
