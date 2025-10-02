@@ -4,17 +4,15 @@
   "description": "Este es el laboratorio 8 del curso de Diseño de Páginas Web",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AndrewLopezHerrera/Laboratorio8DesarrolloAPI.git"
   },
-  "keywords": [
-    "API",
-    "web",
-    "json"
-  ],
+  "keywords": ["API", "web", "json"],
   "author": "Hillary Malespin Ulloa y Andrew López Herrera",
   "license": "ISC",
   "bugs": {
@@ -22,6 +20,14 @@
   },
   "homepage": "https://github.com/AndrewLopezHerrera/Laboratorio8DesarrolloAPI#readme",
   "dependencies": {
-    "jsonwebtoken": "^9.0.2"
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.1",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }
