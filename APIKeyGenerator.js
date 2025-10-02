@@ -14,7 +14,7 @@ class APIKeyGenerator {
         if(key === this.apiKey) {
             return true;
         }
-        throw new ErrorWeb('API Key inválida', 403);
+        throw new ErrorWeb('API Key inválida', 401);
     }
 }
 
