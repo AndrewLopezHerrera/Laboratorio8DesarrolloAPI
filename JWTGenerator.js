@@ -7,12 +7,12 @@ class JWTGenerator {
         this.Secret = crypto.randomBytes(32).toString('hex');
     }
 
-    generateToken(payload, options = {}) {
+    generateToken(payload, secret = this.Secret, options = {}) {
         const defaultOptions = {
             expiresIn: '1h',
             issuer: 'laboratorio8-api'
         };
-        return jwt.sign(payload, this.Secret, { ...defaultOptions, ...options });
+        return jwt.sign(payload, secret, { ...defaultOptions, ...options });
     }
 
     verifyToken(token, options) {

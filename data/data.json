@@ -1,6 +1,41 @@
 {
-    "Usuarios":{
-        "usuario": "ejemploUsuario",
-        "contrasena": "ejemploContrasena123"
-    }
+    "Usuarios": [
+        {
+            "id": 1,
+            "nombre": "Juan Pérez",
+            "email": "juan.perez@example.com",
+            "contrasena": "ejemploContrasena123",
+            "rol": "admin"
+        },
+        {
+            "id": 2,
+            "nombre": "Ana Gómez",
+            "email": "ana.gomez@example.com",
+            "contrasena": "otraContrasena456",
+            "rol": "editor"
+        }
+    ],
+    "Productos": [
+        {
+            "id": 1,
+            "nombre": "Producto A",
+            "descripcion": "Descripción del Producto A",
+            "precio": 19.99,
+            "cantidad": 100
+        },
+        {
+            "id": 2,
+            "nombre": "Producto B",
+            "descripcion": "Descripción del Producto B",
+            "precio": 29.99,
+            "cantidad": 50
+        },
+        {
+            "id": 3,
+            "nombre": "Producto C",
+            "descripcion": "Descripción del Producto C",
+            "precio": 9.99,
+            "cantidad": 200
+        }
+    ]
 }
