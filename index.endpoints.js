@@ -110,7 +110,6 @@ app.post('/auth/login', requireApiKey, (req, res, next) => {
 });
 
 // --- Products ---
-// Listar con paginación
 app.get('/products', requireApiKey, (req, res) => {
   const page = Math.max(1, parseInt(req.query.page || '1', 10));
   const limit = Math.max(1, parseInt(req.query.limit || '10', 10));
