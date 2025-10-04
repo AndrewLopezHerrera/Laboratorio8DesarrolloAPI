@@ -77,6 +77,7 @@ let products = [
 app.get('/', (req, res) => {
   res.type('text/html').send(`<h1>Laboratorio 8 API</h1>
   <p>Servidor operativo</p>
+  
   <ul>
     <li>GET /ping</li>
     <li>POST /auth/login (x-api-key)</li>
@@ -110,6 +111,7 @@ app.post('/auth/login', requireApiKey, (req, res, next) => {
 });
 
 // --- Products ---
+// Listar con paginación
 app.get('/products', requireApiKey, (req, res) => {
   const page = Math.max(1, parseInt(req.query.page || '1', 10));
   const limit = Math.max(1, parseInt(req.query.limit || '10', 10));
