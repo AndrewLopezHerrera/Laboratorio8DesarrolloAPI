@@ -76,9 +76,9 @@ async function saveToJSON(filename, data) {
   try {
     const filePath = path.join(__dirname, filename);
     await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
-    console.log(`✅ Datos guardados en ${filename}`);
+    console.log(`Datos guardados en ${filename}`);
   } catch (error) {
-    console.error(`❌ Error guardando ${filename}:`, error.message);
+    console.error(`Error guardando ${filename}:`, error.message);
     throw new ErrorWeb(`Error guardando datos: ${error.message}`, 500);
   }
 }
