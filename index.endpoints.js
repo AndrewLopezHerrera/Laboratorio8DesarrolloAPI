@@ -4,6 +4,8 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const { v4: uuid } = require('uuid');
+const fs = require('fs').promises;
+const path = require('path');
 
 const APIKeyGenerator = require('./APIKeyGenerator');
 const JWTGenerator = require('./JWTGenerator');
@@ -65,19 +67,35 @@ const roleCheck = (...roles) => (req, res, next) => {
 };
 
 // ===== Datos de demo en memoria  =====
-const users = [
-  { id: 'u1', username: 'alice', password: 'alice123', role: 'admin' },
-  { id: 'u2', username: 'bob',   password: 'bob123',   role: 'editor' }
-];
-let products = [
-  { id: uuid(), name: 'Laptop X', sku: 'SKU-0001', price: 999.99, stock: 5, category: 'computers' }
-];
+import users from './users.json' assert { type: 'json' };
+
+import products from './products.json' assert { type: 'json' };
+
+// ===== Funciones para persistir datos =====
+async function saveToJSON(filename, data) {
+  try {
+    const filePath = path.join(__dirname, filename);
+    await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
+    console.log(`✅ Datos guardados en ${filename}`);
+  } catch (error) {
+    console.error(`❌ Error guardando ${filename}:`, error.message);
+    throw new ErrorWeb(`Error guardando datos: ${error.message}`, 500);
+  }
+}
+
+async function saveProducts() {
+  return saveToJSON('products.json', products);
+}
+
+async function saveUsers() {
+  return saveToJSON('users.json', users);
+}
 
 // ===== Endpoints =====
 app.get('/', (req, res) => {
   res.type('text/html').send(`<h1>Laboratorio 8 API</h1>
   <p>Servidor operativo</p>
-  
+
   <ul>
     <li>GET /ping</li>
     <li>POST /auth/login (x-api-key)</li>
@@ -94,9 +112,9 @@ app.get('/ping', (req, res) => res.status(200).json(ok(req, { pong: true })));
 // --- Auth ---
 app.post('/auth/login', requireApiKey, (req, res, next) => {
   try {
-    const { username, password } = req.body || {};
-    if (!username || !password) {
-      return res.status(400).json(fail(req, 400, 'BAD_REQUEST', 'username and password required'));
+    const { username, password, secret } = req.body || {};
+    if (!username || !password || !secret) {
+      return res.status(400).json(fail(req, 400, 'BAD_REQUEST', 'username, password and secret required'));
     }
     const user = users.find(u => u.username === username && u.password === password);
     if (!user) {
@@ -128,38 +146,74 @@ app.get('/products/:id', requireApiKey, (req, res) => {
 });
 
 // Crear
-app.post('/products', authJWT, roleCheck('editor', 'admin'), (req, res) => {
-  const b = req.body || {};
-  const errors = validateProduct(b);
-  if (errors.length) return res.status(422).json(fail(req, 422, 'UNPROCESSABLE_ENTITY', 'Invalid data', errors));
-  if (products.some(p => p.sku === b.sku)) return res.status(409).json(fail(req, 409, 'CONFLICT', 'SKU already exists'));
-  const entity = { id: uuid(), name: b.name, sku: b.sku, price: Number(b.price), stock: Number(b.stock), category: b.category };
-  products.push(entity);
-  res.status(201).json(ok(req, entity));
+app.post('/products', authJWT, roleCheck('editor', 'admin'), async (req, res, next) => {
+  try {
+    const b = req.body || {};
+    const errors = validateProduct(b);
+    if (errors.length) return res.status(422).json(fail(req, 422, 'UNPROCESSABLE_ENTITY', 'Invalid data', errors));
+    if (products.some(p => p.sku === b.sku)) return res.status(409).json(fail(req, 409, 'CONFLICT', 'SKU already exists'));
+    
+    const entity = { 
+      id: uuid(), 
+      name: b.name, 
+      sku: b.sku, 
+      price: Number(b.price), 
+      stock: Number(b.stock), 
+      category: b.category 
+    };
+    
+    products.push(entity);
+    await saveProducts();
+    
+    res.status(201).json(ok(req, entity));
+  } catch (err) { 
+    next(err); 
+  }
 });
 
 // Actualizar
-app.put('/products/:id', authJWT, roleCheck('editor', 'admin'), (req, res) => {
-  const idx = products.findIndex(p => p.id === req.params.id);
-  if (idx === -1) return res.status(404).json(fail(req, 404, 'NOT_FOUND', 'Product not found'));
-  const merged = { ...products[idx], ...req.body };
-  const errors = validateProduct(merged);
-  if (errors.length) return res.status(422).json(fail(req, 422, 'UNPROCESSABLE_ENTITY', 'Invalid data', errors));
-  if (req.body?.sku && req.body.sku !== products[idx].sku && products.some(p => p.sku === req.body.sku)) {
-    return res.status(409).json(fail(req, 409, 'CONFLICT', 'SKU already exists'));
+app.put('/products/:id', authJWT, roleCheck('editor', 'admin'), async (req, res, next) => {
+  try {
+    const idx = products.findIndex(p => p.id === req.params.id);
+    if (idx === -1) return res.status(404).json(fail(req, 404, 'NOT_FOUND', 'Product not found'));
+    
+    const merged = { ...products[idx], ...req.body };
+    const errors = validateProduct(merged);
+    if (errors.length) return res.status(422).json(fail(req, 422, 'UNPROCESSABLE_ENTITY', 'Invalid data', errors));
+    
+    if (req.body?.sku && req.body.sku !== products[idx].sku && products.some(p => p.sku === req.body.sku)) {
+      return res.status(409).json(fail(req, 409, 'CONFLICT', 'SKU already exists'));
+    }
+    
+    products[idx] = { ...products[idx], ...{ 
+      name: merged.name, 
+      sku: merged.sku, 
+      price: Number(merged.price), 
+      stock: Number(merged.stock), 
+      category: merged.category 
+    }};
+    
+    await saveProducts();
+    
+    res.status(200).json(ok(req, products[idx]));
+  } catch (err) { 
+    next(err); 
   }
-  products[idx] = { ...products[idx], ...{ 
-    name: merged.name, sku: merged.sku, price: Number(merged.price), stock: Number(merged.stock), category: merged.category 
-  }};
-  res.status(200).json(ok(req, products[idx]));
 });
 
 // Eliminar
-app.delete('/products/:id', authJWT, roleCheck('admin'), (req, res) => {
-  const idx = products.findIndex(p => p.id === req.params.id);
-  if (idx === -1) return res.status(404).json(fail(req, 404, 'NOT_FOUND', 'Product not found'));
-  products.splice(idx, 1);
-  res.status(204).send();
+app.delete('/products/:id', authJWT, roleCheck('admin'), async (req, res, next) => {
+  try {
+    const idx = products.findIndex(p => p.id === req.params.id);
+    if (idx === -1) return res.status(404).json(fail(req, 404, 'NOT_FOUND', 'Product not found'));
+    
+    products.splice(idx, 1);
+    await saveProducts();
+    
+    res.status(204).send();
+  } catch (err) { 
+    next(err); 
+  }
 });
 
 // ===== Manejo de errores =====
