@@ -1,0 +1,26 @@
+[
+  {
+    "id": 101,
+    "name": "Laptop TECBook",
+    "sku": "TEC-001",
+    "price": 899.99,
+    "stock": 15,
+    "category": "Electronics"
+  },
+  {
+    "id": 102,
+    "name": "Mouse inalámbrico",
+    "sku": "TEC-002",
+    "price": 25.50,
+    "stock": 50,
+    "category": "Accessories"
+  },
+  {
+    "id": 103,
+    "name": "Monitor LED 24\"",
+    "sku": "TEC-003",
+    "price": 199.99,
+    "stock": 20,
+    "category": "Electronics"
+  }
+]
